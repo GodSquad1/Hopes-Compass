@@ -1,168 +1,879 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hope's Compass</title>
-
-<link rel="stylesheet" href="styles.css" />
-
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hope's Compass - Mentorship Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f4f8;
+      background-image: url('https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_1280.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+    .card {
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.92);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .tab.active {
+      color: #3b82f6;
+      border-bottom: 3px solid #3b82f6;
+    }
+    .chat-message {
+      border-radius: 1rem;
+      max-width: 80%;
+    }
+    .sent {
+      background-color: #3b82f6;
+      color: white;
+      margin-left: auto;
+    }
+    .received {
+      background-color: #e5e7eb;
+      color: #1f2937;
+    }
+    .loading {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      from {transform: rotate(0deg);}
+      to {transform: rotate(360deg);}
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
-<body>
-  <main>
-
-    <!-- AUTH SECTION -->
-    <section id="auth-section" class="auth-section">
-      <h1>Hope's Compass</h1>
-      <p>Survivor-guided mentorship for teens undergoing chemotherapy</p>
-
-      <div class="form-toggle-buttons">
-        <button id="btn-signin-toggle" class="active">Sign In</button>
-        <button id="btn-signup-toggle">Sign Up</button>
+<body class="bg-gray-100">
+  <div id="app" class="min-h-screen flex items-center justify-center py-6 px-4 max-w-5xl mx-auto w-full">
+    <!-- Authentication Card -->
+    <div id="auth-card" class="card w-full max-w-md p-6 rounded-lg">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-blue-600">Hope's Compass</h1>
+        <p class="text-gray-600 mt-2">Connecting teens through shared journeys</p>
       </div>
 
-      <!-- SIGN IN FORM -->
-      <form id="form-signin" class="auth-form active" autocomplete="off">
-        <label for="signin-email">Email</label>
-        <input type="email" id="signin-email" name="email" required autocomplete="username" />
+      <!-- Auth Tabs -->
+      <div class="flex mb-6 border-b">
+        <button
+          id="signin-tab"
+          class="auth-tab flex-1 py-2 text-center font-medium text-gray-700 border-b-2 border-blue-500"
+        >
+          Sign In
+        </button>
+        <button
+          id="signup-tab"
+          class="auth-tab flex-1 py-2 text-center font-medium text-gray-500"
+        >
+          Sign Up
+        </button>
+      </div>
 
-        <label for="signin-password">Password</label>
-        <input type="password" id="signin-password" name="password" required autocomplete="current-password" />
+      <!-- Sign In Form -->
+      <form id="signin-form" class="auth-form">
+        <div class="mb-4">
+          <label for="signin-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input
+            type="email"
+            id="signin-email"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+        </div>
 
-        <button type="submit">Sign In</button>
-        <p class="error-msg" id="signin-error"></p>
+        <div class="mb-6">
+          <label for="signin-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input
+            type="password"
+            id="signin-password"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition duration-200"
+        >
+          Sign In
+        </button>
       </form>
 
-      <!-- SIGN UP FORM -->
-      <form id="form-signup" class="auth-form" autocomplete="off">
-        <label for="signup-email">Email</label>
-        <input type="email" id="signup-email" name="email" required autocomplete="username" />
+      <!-- Sign Up Form -->
+      <form id="signup-form" class="auth-form hidden">
+        <div class="mb-4">
+          <label for="signup-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input
+            type="email"
+            id="signup-email"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+        </div>
 
-        <label for="signup-password">Password</label>
-        <input type="password" id="signup-password" name="password" required autocomplete="new-password" />
+        <div class="mb-4">
+          <label for="signup-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input
+            type="password"
+            id="signup-password"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+        </div>
 
-        <label for="signup-role">I am a</label>
-        <select id="signup-role" name="role" required>
-          <option value="" disabled selected>Select role</option>
-          <option value="mentee">Mentee (Teen Patient)</option>
-          <option value="mentor">Mentor (Survivor)</option>
-        </select>
+        <div class="mb-6">
+          <label for="role" class="block text-sm font-medium text-gray-700 mb-1">I am a:</label>
+          <select
+            id="role"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="" disabled selected>Select your role</option>
+            <option value="mentee">Mentee (seeking guidance)</option>
+            <option value="mentor">Mentor (offering support)</option>
+          </select>
+          <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+        </div>
 
-        <button type="submit">Sign Up</button>
-        <p class="error-msg" id="signup-error"></p>
+        <button
+          type="submit"
+          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition duration-200"
+        >
+          Sign Up
+        </button>
       </form>
-    </section>
+    </div>
 
-    <!-- ONBOARDING SECTION -->
-    <section id="onboarding-section" class="hidden onboarding-section">
-      <h1>Tell us about you</h1>
-      <p id="onboarding-instruction"></p>
+    <!-- Onboarding Card -->
+    <div id="onboarding-card" class="card w-full max-w-md p-6 rounded-lg hidden">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-blue-600">Complete Your Profile</h2>
+        <p class="text-gray-600 mt-1">Help us match you with the right people</p>
+      </div>
 
-      <!-- Mentee onboarding -->
-      <form id="mentee-onboarding-form" class="onboarding-form hidden" autocomplete="off">
-        <label for="mentee-age">Age:</label>
-        <input type="number" id="mentee-age" name="age" min="1" max="120" required placeholder="Your age" />
+      <form id="onboarding-form">
+        <div class="mb-4">
+          <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+          <input
+            type="number"
+            id="age"
+            min="13"
+            max="25"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+        </div>
 
-        <label for="mentee-cancer-type">Cancer Type:</label>
-        <input type="text" id="mentee-cancer-type" name="cancer-type" required placeholder="E.g., Leukemia" />
+        <div class="mb-4">
+          <label for="cancer-type" class="block text-sm font-medium text-gray-700 mb-1">Cancer Type</label>
+          <input
+            type="text"
+            id="cancer-type"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+        </div>
 
-        <label for="mentee-treatment-stage">Treatment Stage:</label>
-        <select id="mentee-treatment-stage" name="treatment-stage" required>
-          <option value="" disabled selected>Select Stage</option>
-          <option value="diagnosis">Diagnosis</option>
-          <option value="active-treatment">Active Treatment</option>
-          <option value="remission">Remission</option>
-          <option value="follow-up">Follow-up</option>
-          <option value="other">Other</option>
-        </select>
+        <div class="mb-4">
+          <label for="treatment-stage" class="block text-sm font-medium text-gray-700 mb-1">Treatment Stage</label>
+          <select
+            id="treatment-stage"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="" disabled selected>Select your treatment stage</option>
+            <option value="newly-diagnosed">Newly Diagnosed</option>
+            <option value="active-treatment">Active Treatment</option>
+            <option value="post-treatment">Post Treatment</option>
+            <option value="remission">Remission</option>
+          </select>
+          <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+        </div>
 
-        <label for="mentee-interests">Interests / Concerns:</label>
-        <textarea id="mentee-interests" name="interests" rows="4" placeholder="What matters most to you?" required></textarea>
+        <div class="mb-6">
+          <label for="interests" class="block text-sm font-medium text-gray-700 mb-1">Personal Interests (comma-separated)</label>
+          <input
+            type="text"
+            id="interests"
+            placeholder="e.g., music, reading, gaming"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <p class="error-message text-red-500 text-xs mt-1 hidden"></p>
+        </div>
 
-        <button type="submit">Save &amp; Continue</button>
-        <p class="error-msg" id="mentee-onboarding-error"></p>
+        <button
+          type="submit"
+          class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition duration-200"
+        >
+          Complete Profile
+        </button>
       </form>
+    </div>
 
-      <!-- Mentor onboarding -->
-      <form id="mentor-onboarding-form" class="onboarding-form hidden" autocomplete="off">
-        <label for="mentor-age">Age (optional):</label>
-        <input type="number" id="mentor-age" name="age" min="1" max="120" placeholder="Your age (optional)" />
+    <!-- Main Portal -->
+    <div id="portal" class="hidden w-full max-w-4xl flex flex-col">
+      <!-- Top Bar -->
+      <div
+        class="bg-white shadow-md p-4 rounded-t-lg flex justify-between items-center"
+      >
+        <h1 class="text-2xl font-bold text-blue-600">Hope's Compass</h1>
+        <button
+          id="logout-btn"
+          class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md transition duration-200"
+        >
+          <i class="fas fa-sign-out-alt mr-2"></i>Log Out
+        </button>
+      </div>
 
-        <label for="mentor-cancer-types">Cancer Type(s) Survived:</label>
-        <input type="text" id="mentor-cancer-types" name="cancer-types" placeholder="E.g., Leukemia, Lymphoma" required />
+      <!-- Tabs -->
+      <div class="bg-white border-b flex">
+        <button
+          data-tab="profile"
+          class="tab active flex-1 py-3 text-center font-medium"
+        >
+          <i class="fas fa-user mr-2"></i>Profile
+        </button>
+        <button
+          data-tab="chat"
+          class="tab flex-1 py-3 text-center font-medium text-gray-500"
+        >
+          <i class="fas fa-comments mr-2"></i>Chat
+        </button>
+        <button
+          data-tab="resources"
+          class="tab flex-1 py-3 text-center font-medium text-gray-500"
+        >
+          <i class="fas fa-book-medical mr-2"></i>Resources
+        </button>
+        <button
+          data-tab="goals"
+          class="tab flex-1 py-3 text-center font-medium text-gray-500"
+        >
+          <i class="fas fa-flag-checkered mr-2"></i>Goals
+        </button>
+        <button
+          data-tab="matches"
+          class="tab flex-1 py-3 text-center font-medium text-gray-500"
+        >
+          <i class="fas fa-handshake mr-2"></i>Matches
+        </button>
+      </div>
 
-        <label for="mentor-time-since-treatment">Time Since Treatment Ended (years):</label>
-        <input type="number" id="mentor-time-since-treatment" name="time-since-treatment" min="0" required />
+      <!-- Tab Content -->
+      <div
+        class="bg-white p-6 rounded-b-lg shadow-md flex-grow overflow-auto"
+      >
+        <!-- Profile Tab -->
+        <div id="profile-tab" class="tab-content active">
+          <h2 class="text-xl font-bold mb-4">Your Profile</h2>
 
-        <label for="mentor-mentoring-areas">Areas you can mentor in:</label>
-        <textarea id="mentor-mentoring-areas" name="mentoring-areas" rows="4" placeholder="Emotional support, Practical tips, etc." required></textarea>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-3">
+              <div>
+                <span class="text-sm font-medium text-gray-500">Email:</span>
+                <p id="profile-email" class="text-gray-800"></p>
+              </div>
 
-        <label for="mentor-availability">Preferred Communication Style / Availability:</label>
-        <textarea id="mentor-availability" name="availability" rows="2" placeholder="E.g., Weekdays evenings, video calls" required></textarea>
+              <div>
+                <span class="text-sm font-medium text-gray-500">Role:</span>
+                <p id="profile-role" class="text-gray-800"></p>
+              </div>
 
-        <button type="submit">Save &amp; Continue</button>
-        <p class="error-msg" id="mentor-onboarding-error"></p>
-      </form>
-    </section>
+              <div>
+                <span class="text-sm font-medium text-gray-500">Age:</span>
+                <p id="profile-age" class="text-gray-800"></p>
+              </div>
+            </div>
 
-    <!-- PORTAL SECTION -->
-    <section id="portal-section" class="hidden portal-section">
-      <header id="portal-header">
-        <h1>Hope's Compass</h1>
-        <button id="btn-logout">Logout</button>
-      </header>
+            <div class="space-y-3">
+              <div>
+                <span class="text-sm font-medium text-gray-500">Cancer Type:</span>
+                <p id="profile-cancer-type" class="text-gray-800"></p>
+              </div>
 
-      <nav id="portal-tabs">
-        <button class="tab-btn active" data-tab="chat-tab">Chat</button>
-        <button class="tab-btn" data-tab="goals-tab">Goals</button>
-        <button class="tab-btn" data-tab="resources-tab">Resources</button>
-        <button class="tab-btn" data-tab="questions-tab">Anonymous Q&A</button>
-      </nav>
+              <div>
+                <span class="text-sm font-medium text-gray-500"
+                  >Treatment Stage:</span
+                >
+                <p id="profile-treatment-stage" class="text-gray-800"></p>
+              </div>
 
-      <main id="portal-content">
-        <section id="chat-tab" class="tab-content active">
-          <h2>Chat</h2>
-          <div id="chat-messages" class="chat-messages"></div>
-          <form id="chat-form" autocomplete="off">
-            <input type="text" id="chat-input" placeholder="Type a message..." required />
-            <button type="submit">Send</button>
-          </form>
-        </section>
+              <div>
+                <span class="text-sm font-medium text-gray-500">Interests:</span>
+                <p id="profile-interests" class="text-gray-800"></p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <section id="goals-tab" class="tab-content">
-          <h2>Goals</h2>
-          <div id="goals-list"></div>
-          <form id="goals-form" autocomplete="off">
-            <input type="text" id="goal-input" placeholder="Set a goal..." required />
-            <button type="submit">Add Goal</button>
-          </form>
-        </section>
+        <!-- Chat Tab -->
+        <div id="chat-tab" class="tab-content">
+          <h2 class="text-xl font-bold mb-4">Conversations</h2>
 
-        <section id="resources-tab" class="tab-content">
-          <h2>Resources</h2>
-          <ul id="resources-list">
-            <li>Loading resources...</li>
-          </ul>
-        </section>
+          <div class="border rounded-lg overflow-hidden flex flex-col h-[320px]">
+            <div
+              id="chat-history"
+              class="p-4 flex-grow overflow-y-auto bg-gray-50 space-y-4"
+            >
+              <!-- Chat messages will be inserted here -->
+            </div>
 
-        <section id="questions-tab" class="tab-content">
-          <h2>Anonymous Question Box</h2>
-          <ul id="questions-list"></ul>
-          <form id="questions-form" autocomplete="off">
-            <textarea id="question-input" rows="3" placeholder="Ask a question anonymously..." required></textarea>
-            <button type="submit">Submit Question</button>
-          </form>
-        </section>
-      </main>
-    </section>
+            <div class="border-t p-3 bg-white">
+              <form id="chat-form" class="flex">
+                <input
+                  type="text"
+                  id="chat-input"
+                  placeholder="Type your message..."
+                  class="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                <button
+                  type="submit"
+                  class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-r-md transition duration-200"
+                >
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
 
-  </main>
+        <!-- Resources Tab -->
+        <div id="resources-tab" class="tab-content">
+          <h2 class="text-xl font-bold mb-4">Resources</h2>
+          <div
+            class="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300"
+          >
+            <i class="fas fa-tools text-4xl text-gray-400 mb-3"></i>
+            <p class="text-gray-600">Coming soon!</p>
+          </div>
+        </div>
 
-<script src="compass.js" type="module"></script>
+        <!-- Goals Tab -->
+        <div id="goals-tab" class="tab-content">
+          <h2 class="text-xl font-bold mb-4">Goals</h2>
+          <div
+            class="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300"
+          >
+            <i class="fas fa-tools text-4xl text-gray-400 mb-3"></i>
+            <p class="text-gray-600">Coming soon!</p>
+          </div>
+        </div>
+
+        <!-- Matches Tab -->
+        <div id="matches-tab" class="tab-content">
+          <h2 class="text-xl font-bold mb-4">Your Matches</h2>
+          <div id="matches-list" class="space-y-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div id="loading" class="loading hidden">
+    <div
+      class="bg-white p-5 rounded-lg shadow-lg flex items-center"
+    >
+      <svg
+        class="spinner w-6 h-6 text-blue-500 mr-3"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      <span>Loading...</span>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase config - REPLACE WITH YOUR OWN
+    const firebaseConfig = {
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Elements
+    const authCard = document.getElementById('auth-card');
+    const onboardingCard = document.getElementById('onboarding-card');
+    const portal = document.getElementById('portal');
+    const loading = document.getElementById('loading');
+
+    // Auth Tabs & Forms
+    const signinTab = document.getElementById('signin-tab');
+    const signupTab = document.getElementById('signup-tab');
+    const signinForm = document.getElementById('signin-form');
+    const signupForm = document.getElementById('signup-form');
+
+    // Onboarding form
+    const onboardingForm = document.getElementById('onboarding-form');
+
+    // Portal UI
+    const logoutBtn = document.getElementById('logout-btn');
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const tabContents = Array.from(document.querySelectorAll('.tab-content'));
+
+    // Profile fields
+    const profileEmail = document.getElementById('profile-email');
+    const profileRole = document.getElementById('profile-role');
+    const profileAge = document.getElementById('profile-age');
+    const profileCancerType = document.getElementById('profile-cancer-type');
+    const profileTreatmentStage = document.getElementById('profile-treatment-stage');
+    const profileInterests = document.getElementById('profile-interests');
+
+    // Chat elements
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatHistory = document.getElementById('chat-history');
+
+    // Matches list
+    const matchesList = document.getElementById('matches-list');
+
+    // Helpers
+    function showLoading() {
+      loading.classList.remove('hidden');
+    }
+    function hideLoading() {
+      loading.classList.add('hidden');
+    }
+    function showError(input, message) {
+      const p = input.parentElement.querySelector('.error-message');
+      if (p) {
+        p.textContent = message;
+        p.classList.remove('hidden');
+      }
+    }
+    function clearErrors(form) {
+      form.querySelectorAll('.error-message').forEach(el => {
+        el.textContent = '';
+        el.classList.add('hidden');
+      });
+    }
+    function formatTreatmentStage(stage) {
+      if (!stage) return '';
+      const stages = {
+        'newly-diagnosed': 'Newly Diagnosed',
+        'active-treatment': 'Active Treatment',
+        'post-treatment': 'Post Treatment',
+        remission: 'Remission'
+      };
+      return stages[stage] || stage;
+    }
+
+    // Switch auth tabs
+    function switchAuthTab(tab) {
+      if (tab === 'signin') {
+        signinTab.classList.add('border-blue-500', 'text-gray-700');
+        signinTab.classList.remove('text-gray-500');
+        signupTab.classList.remove('border-blue-500', 'text-gray-700');
+        signupTab.classList.add('text-gray-500');
+        signinForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+      } else {
+        signupTab.classList.add('border-blue-500', 'text-gray-700');
+        signupTab.classList.remove('text-gray-500');
+        signinTab.classList.remove('border-blue-500', 'text-gray-700');
+        signinTab.classList.add('text-gray-500');
+        signupForm.classList.remove('hidden');
+        signinForm.classList.add('hidden');
+      }
+      clearErrors(signinForm);
+      clearErrors(signupForm);
+    }
+
+    signinTab.addEventListener('click', () => switchAuthTab('signin'));
+    signupTab.addEventListener('click', () => switchAuthTab('signup'));
+
+    // Sign Up
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors(signupForm);
+
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value;
+      const role = document.getElementById('role').value;
+
+      let valid = true;
+
+      if (!email) {
+        showError(document.getElementById('signup-email'), 'Email is required');
+        valid = false;
+      }
+      if (!password || password.length < 6) {
+        showError(document.getElementById('signup-password'), 'Password must be at least 6 characters');
+        valid = false;
+      }
+      if (!role) {
+        showError(document.getElementById('role'), 'Please select a role');
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      try {
+        showLoading();
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        // Create Firestore user doc
+        await db.collection('users').doc(user.uid).set({
+          email,
+          role,
+          isOnboarded: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        onboardingCard.classList.remove('hidden');
+        authCard.classList.add('hidden');
+      } catch (error) {
+        alert('Sign up error: ' + error.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    // Sign In
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors(signinForm);
+
+      const email = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+
+      let valid = true;
+      if (!email) {
+        showError(document.getElementById('signin-email'), 'Email is required');
+        valid = false;
+      }
+      if (!password) {
+        showError(document.getElementById('signin-password'), 'Password is required');
+        valid = false;
+      }
+      if (!valid) return;
+
+      try {
+        showLoading();
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        // Load user doc from Firestore
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        const userData = userDoc.data();
+
+        if (!userData.isOnboarded) {
+          onboardingCard.classList.remove('hidden');
+          authCard.classList.add('hidden');
+        } else {
+          portal.classList.remove('hidden');
+          authCard.classList.add('hidden');
+          updateProfileUI(userData);
+          loadMatches(userData);
+        }
+      } catch (error) {
+        alert('Sign in error: ' + error.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    // Onboarding
+    onboardingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors(onboardingForm);
+
+      const ageInput = document.getElementById('age');
+      const cancerTypeInput = document.getElementById('cancer-type');
+      const treatmentStageInput = document.getElementById('treatment-stage');
+      const interestsInput = document.getElementById('interests');
+
+      let valid = true;
+      if (!ageInput.value || ageInput.value < 13 || ageInput.value > 25) {
+        showError(ageInput, 'Age must be between 13 and 25');
+        valid = false;
+      }
+      if (!cancerTypeInput.value.trim()) {
+        showError(cancerTypeInput, 'Cancer type is required');
+        valid = false;
+      }
+      if (!treatmentStageInput.value) {
+        showError(treatmentStageInput, 'Select treatment stage');
+        valid = false;
+      }
+      if (!interestsInput.value.trim()) {
+        showError(interestsInput, 'Please enter at least one interest');
+        valid = false;
+      }
+      if (!valid) return;
+
+      try {
+        showLoading();
+        const user = auth.currentUser;
+        if (!user) throw new Error('Not authenticated');
+
+        const userDocRef = db.collection('users').doc(user.uid);
+
+        await userDocRef.update({
+          age: Number(ageInput.value),
+          cancerType: cancerTypeInput.value.trim(),
+          treatmentStage: treatmentStageInput.value,
+          interests: interestsInput.value.trim(),
+          isOnboarded: true,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Reload updated data
+        const updatedUserDoc = await userDocRef.get();
+        const updatedUserData = updatedUserDoc.data();
+
+        onboardingCard.classList.add('hidden');
+        portal.classList.remove('hidden');
+        updateProfileUI(updatedUserData);
+        loadMatches(updatedUserData);
+      } catch (error) {
+        alert('Error updating profile: ' + error.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    // Update Profile UI
+    function updateProfileUI(user) {
+      profileEmail.textContent = user.email || '';
+      profileRole.textContent = user.role === 'mentor' ? 'Mentor' : 'Mentee';
+      profileAge.textContent = user.age || '';
+      profileCancerType.textContent = user.cancerType || '';
+      profileTreatmentStage.textContent = formatTreatmentStage(user.treatmentStage) || '';
+      profileInterests.textContent = user.interests || '';
+    }
+
+    // Tab navigation
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active', 'text-blue-600'));
+        tab.classList.add('active', 'text-blue-600');
+
+        const tabId = tab.getAttribute('data-tab');
+        tabContents.forEach(content => content.classList.remove('active'));
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+
+        // Load matches tab dynamically on open
+        if (tabId === 'matches') {
+          loadMatches();
+        }
+      });
+    });
+
+    // Logout
+    logoutBtn.addEventListener('click', async () => {
+      await auth.signOut();
+      portal.classList.add('hidden');
+      onboardingCard.classList.add('hidden');
+      authCard.classList.remove('hidden');
+      switchAuthTab('signin');
+      // Clear all forms
+      document.querySelectorAll('form').forEach(form => form.reset());
+      chatHistory.innerHTML = '';
+      matchesList.innerHTML = '';
+    });
+
+    // Chat form (prototype)
+    chatForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const message = chatInput.value.trim();
+      if (!message) return;
+      appendMessage('You', message, 'sent');
+      chatInput.value = '';
+      setTimeout(() => {
+        appendMessage('Mentor', 'This is a prototype. Real chat coming soon.', 'received');
+      }, 1000);
+    });
+
+    function appendMessage(sender, text, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `chat-message ${type} p-3`;
+
+      const header = document.createElement('div');
+      header.className = 'flex justify-between items-center mb-1';
+
+      const senderSpan = document.createElement('span');
+      senderSpan.className = 'font-medium';
+      senderSpan.textContent = sender;
+
+      const timestamp = document.createElement('span');
+      timestamp.className = 'text-xs opacity-70';
+      timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      header.appendChild(senderSpan);
+      header.appendChild(timestamp);
+
+      const messageText = document.createElement('div');
+      messageText.textContent = text;
+
+      messageDiv.appendChild(header);
+      messageDiv.appendChild(messageText);
+
+      chatHistory.appendChild(messageDiv);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    // Load matches tab content
+    async function loadMatches(currentUserData = null) {
+      if (!currentUserData) {
+        // Get current user data from Firestore
+        const user = auth.currentUser;
+        if (!user) return;
+        const doc = await db.collection('users').doc(user.uid).get();
+        currentUserData = doc.data();
+      }
+      matchesList.innerHTML = '<p>Loading matches...</p>';
+
+      try {
+        const oppositeRole = currentUserData.role === 'mentor' ? 'mentee' : 'mentor';
+        const userInterests = currentUserData.interests
+          ? currentUserData.interests.toLowerCase().split(',').map(i => i.trim())
+          : [];
+
+        const usersSnapshot = await db.collection('users')
+          .where('role', '==', oppositeRole)
+          .where('isOnboarded', '==', true)
+          .get();
+
+        const matches = [];
+
+        usersSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (!data.cancerType || !data.interests) return;
+
+          if (data.cancerType.toLowerCase() === currentUserData.cancerType.toLowerCase()) {
+            const theirInterests = data.interests.toLowerCase().split(',').map(i => i.trim());
+            const sharedInterests = userInterests.filter(i => theirInterests.includes(i));
+
+            if (sharedInterests.length > 0) {
+              matches.push({
+                id: doc.id,
+                email: data.email,
+                role: data.role,
+                cancerType: data.cancerType,
+                treatmentStage: data.treatmentStage,
+                interests: data.interests,
+                sharedInterests
+              });
+            }
+          }
+        });
+
+        if (matches.length === 0) {
+          matchesList.innerHTML = '<p>No matches found yet. Try updating your interests or profile.</p>';
+          return;
+        }
+
+        matchesList.innerHTML = '';
+        matches.forEach(match => {
+          const div = document.createElement('div');
+          div.className = 'p-4 bg-gray-50 rounded shadow';
+
+          div.innerHTML = `
+            <p><strong>Email:</strong> ${match.email}</p>
+            <p><strong>Role:</strong> ${match.role === 'mentor' ? 'Mentor' : 'Mentee'}</p>
+            <p><strong>Cancer Type:</strong> ${match.cancerType}</p>
+            <p><strong>Treatment Stage:</strong> ${formatTreatmentStage(match.treatmentStage)}</p>
+            <p><strong>Shared Interests:</strong> ${match.sharedInterests.join(', ')}</p>
+            <button class="connect-btn mt-2 px-4 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition duration-200" data-id="${match.id}">Connect</button>
+          `;
+
+          matchesList.appendChild(div);
+        });
+
+        // Add connect button handlers (prototype - just alert)
+        matchesList.querySelectorAll('.connect-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            alert('Connection request sent! (Prototype)');
+          });
+        });
+      } catch (error) {
+        matchesList.innerHTML = `<p class="text-red-500">Error loading matches: ${error.message}</p>`;
+      }
+    }
+
+    // Monitor auth state on page load
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        showLoading();
+        try {
+          const doc = await db.collection('users').doc(user.uid).get();
+          const userData = doc.data();
+
+          if (!userData.isOnboarded) {
+            onboardingCard.classList.remove('hidden');
+            authCard.classList.add('hidden');
+            portal.classList.add('hidden');
+          } else {
+            portal.classList.remove('hidden');
+            authCard.classList.add('hidden');
+            onboardingCard.classList.add('hidden');
+            updateProfileUI(userData);
+            loadMatches(userData);
+          }
+        } catch (error) {
+          alert('Error loading user data: ' + error.message);
+        } finally {
+          hideLoading();
+        }
+      } else {
+        authCard.classList.remove('hidden');
+        onboardingCard.classList.add('hidden');
+        portal.classList.add('hidden');
+        switchAuthTab('signin');
+      }
+    });
+  </script>
 </body>
 </html>
