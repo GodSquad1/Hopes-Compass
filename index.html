@@ -63,6 +63,45 @@
       from {transform: rotate(0deg);}
       to {transform: rotate(360deg);}
     }
+        .resource-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background-color: #f9fafb;
+      border-radius: 0.5rem;
+      border-left: 4px solid #3b82f6;
+    }
+    .resource-section h4 {
+      color: #1f2937;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .resource-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .resource-section li {
+      margin-bottom: 0.75rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+    .resource-section li:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .resource-section a {
+      color: #3b82f6 !important;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .resource-section a:hover {
+      color: #1d4ed8 !important;
+      text-decoration: underline;
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
@@ -183,8 +222,6 @@
           <input
             type="number"
             id="age"
-            min="13"
-            max="25"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
@@ -275,10 +312,10 @@
           <i class="fas fa-book-medical mr-2"></i>Resources
         </button>
         <button
-          data-tab="goals"
+          data-tab="important-dates"
           class="tab flex-1 py-3 text-center font-medium text-gray-500"
         >
-          <i class="fas fa-flag-checkered mr-2"></i>Goals
+          <i class="fas fa-flag-checkered mr-2"></i>Important Dates
         </button>
         <button
           data-tab="matches"
@@ -370,22 +407,34 @@
         <!-- Resources Tab -->
         <div id="resources-tab" class="tab-content">
           <h2 class="text-xl font-bold mb-4">Resources</h2>
-          <div
-            class="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300"
-          >
-            <i class="fas fa-tools text-4xl text-gray-400 mb-3"></i>
-            <p class="text-gray-600">Coming soon!</p>
+          
+          <p class="text-gray-600 mb-6">Below are curated resources by cancer type, tailored for teens undergoing chemotherapy and their mentors.</p>
+
+          <div class="resource-section">
+          
+            <h4><b>General Cancer Support & Resources</b></h4>
+            <ul>
+              <li><a href="https://www.cancer.org/" target="_blank" rel="noopener noreferrer">American Cancer Society</a></li>
+              <li><a href="https://www.stjude.org/" target="_blank" rel="noopener noreferrer">St. Jude Children's Research Hospital</a></li>
+              <li><a href="https://teenagecancertrust.org/" target="_blank" rel="noopener noreferrer">Teenage Cancer Trust</a></li>
+              <li><a href="https://www.cancercare.org/" target="_blank" rel="noopener noreferrer">CancerCare - Support Services</a></li>
+              <li><a href="https://www.cancer.net/coping-younger-adults" target="_blank" rel="noopener noreferrer">Cancer.Net - Coping for Young Adults</a></li>
+              <li><a href="https://www.youngsurvival.org/" target="_blank" rel="noopener noreferrer">Young Survival Coalition</a></li>
+            </ul>
           </div>
+
+          <p class="mt-6 text-sm italic text-gray-500">
+            We encourage you to explore these trusted sources for support, education, and connection throughout your journey.
+          </p>
         </div>
 
-        <!-- Goals Tab -->
-        <div id="goals-tab" class="tab-content">
-          <h2 class="text-xl font-bold mb-4">Goals</h2>
+        <!-- Important Dates Tab -->
+        <div id="important-dates-tab" class="tab-content">
+          <h2 class="text-xl font-bold mb-4">Important Dates</h2>
           <div
-            class="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300"
-          >
+            class="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
             <i class="fas fa-tools text-4xl text-gray-400 mb-3"></i>
-            <p class="text-gray-600">Coming soon!</p>
+            
           </div>
         </div>
 
@@ -435,6 +484,14 @@
   <script>
     // Firebase config - REPLACE WITH YOUR OWN
     const firebaseConfig = {
+        apiKey: "AIzaSyBkhJA-hpp7Rj_2CfK5CXiMZ2mKr3t0AMw",
+        authDomain: "hope-s-compass.firebaseapp.com",
+        databaseURL: "https://hope-s-compass-default-rtdb.firebaseio.com",
+        projectId: "hope-s-compass",
+        storageBucket: "hope-s-compass.firebasestorage.app",
+        messagingSenderId: "663262130072",
+        appId: "1:663262130072:web:8c2c075238124ae4a8c5ed",
+        measurementId: "G-YFHTEYRKZD"
     };
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
@@ -608,7 +665,7 @@
         const userDoc = await db.collection('users').doc(user.uid).get();
         const userData = userDoc.data();
 
-        if (!userData.isOnboarded) {
+        if (!userData || !userData.isOnboarded) {
           onboardingCard.classList.remove('hidden');
           authCard.classList.add('hidden');
         } else {
@@ -635,8 +692,8 @@
       const interestsInput = document.getElementById('interests');
 
       let valid = true;
-      if (!ageInput.value || ageInput.value < 13 || ageInput.value > 25) {
-        showError(ageInput, 'Age must be between 13 and 25');
+      if (!ageInput.value) {
+        showError(ageInput, 'Age must be valid.');
         valid = false;
       }
       if (!cancerTypeInput.value.trim()) {
@@ -693,6 +750,72 @@
       profileTreatmentStage.textContent = formatTreatmentStage(user.treatmentStage) || '';
       profileInterests.textContent = user.interests || '';
     }
+    function loadConnectionRequests() {
+        const currentUser = auth.currentUser;
+        if (!currentUser) return;
+
+        const requestsContainer = document.createElement('div');
+        requestsContainer.id = 'connection-requests';
+        requestsContainer.className = 'mb-4 p-4 bg-yellow-50 border border-yellow-300 rounded';
+
+        const requestsTitle = document.createElement('h3');
+        requestsTitle.textContent = 'Connection Requests';
+        requestsTitle.className = 'text-lg font-bold mb-2';
+        requestsContainer.appendChild(requestsTitle);
+
+        const requestsList = document.createElement('div');
+        requestsContainer.appendChild(requestsList);
+
+        db.collection('connectionRequests')
+        .where('toUserId', '==', currentUser.uid)
+        .where('status', '==', 'pending')
+        .onSnapshot(async snapshot => {
+        requestsList.innerHTML = '';
+      if (snapshot.empty) {
+        requestsList.innerHTML = '<p class="text-gray-600">No pending requests.</p>';
+        return;
+      }
+
+      for (const docSnap of snapshot.docs) {
+        const req = docSnap.data();
+        const senderDoc = await db.collection('users').doc(req.fromUserId).get();
+        const sender = senderDoc.data();
+
+        const requestDiv = document.createElement('div');
+        requestDiv.className = 'p-3 mb-2 bg-white border rounded shadow-sm';
+        requestDiv.innerHTML = `
+          <p><strong>${sender.email}</strong> (${sender.role}) wants to connect.</p>
+          <button class="accept-btn bg-green-500 text-white px-3 py-1 rounded mt-2" data-id="${docSnap.id}">Accept</button>
+          <button class="decline-btn bg-red-500 text-white px-3 py-1 rounded mt-2 ml-2" data-id="${docSnap.id}">Decline</button>
+        `;
+        requestsList.appendChild(requestDiv);
+      }
+
+      requestsList.querySelectorAll('.accept-btn').forEach(btn => {
+        btn.addEventListener('click', () => updateRequestStatus(btn.dataset.id, 'accepted'));
+      });
+
+      requestsList.querySelectorAll('.decline-btn').forEach(btn => {
+        btn.addEventListener('click', () => updateRequestStatus(btn.dataset.id, 'declined'));
+      });
+    });
+
+  const profileTab = document.getElementById('profile-tab');
+  profileTab.insertBefore(requestsContainer, profileTab.firstChild);
+}
+
+async function updateRequestStatus(requestId, newStatus) {
+  try {
+    await db.collection('connectionRequests').doc(requestId).update({
+      status: newStatus,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    alert(`Request ${newStatus}`);
+  } catch (err) {
+    alert('Error updating request: ' + err.message);
+  }
+}
+
 
     // Tab navigation
     tabs.forEach(tab => {
@@ -732,7 +855,7 @@
       appendMessage('You', message, 'sent');
       chatInput.value = '';
       setTimeout(() => {
-        appendMessage('Mentor', 'This is a prototype. Real chat coming soon.', 'received');
+        appendMessage('Mentor', 'Test.', 'received');
       }, 1000);
     });
 
@@ -833,47 +956,73 @@
         });
 
         // Add connect button handlers (prototype - just alert)
+        // Add connect button handlers (save to Firestore)
         matchesList.querySelectorAll('.connect-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            alert('Connection request sent! (Prototype)');
-          });
+        btn.addEventListener('click', async () => {
+        const targetUserId = btn.getAttribute('data-id');
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+            alert('You must be signed in to send a connection request.');
+            return;
+        }
+
+        try {
+            showLoading();
+
+            await db.collection('connectionRequests').add({
+            fromUserId: currentUser.uid,
+            toUserId: targetUserId,
+            status: 'pending',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+
+        alert('Connection request sent!');
+    } catch (err) {
+        alert('Error sending request: ' + err.message);
+    } finally {
+          hideLoading();
+        }
+      });
+    });
+
       } catch (error) {
         matchesList.innerHTML = `<p class="text-red-500">Error loading matches: ${error.message}</p>`;
       }
     }
 
     // Monitor auth state on page load
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        showLoading();
-        try {
-          const doc = await db.collection('users').doc(user.uid).get();
-          const userData = doc.data();
+    auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    try {
+      const userDocRef = db.collection('users').doc(user.uid);
+      const docSnap = await userDocRef.get();
 
-          if (!userData.isOnboarded) {
-            onboardingCard.classList.remove('hidden');
-            authCard.classList.add('hidden');
-            portal.classList.add('hidden');
-          } else {
-            portal.classList.remove('hidden');
-            authCard.classList.add('hidden');
-            onboardingCard.classList.add('hidden');
-            updateProfileUI(userData);
-            loadMatches(userData);
-          }
-        } catch (error) {
-          alert('Error loading user data: ' + error.message);
-        } finally {
-          hideLoading();
-        }
-      } else {
-        authCard.classList.remove('hidden');
-        onboardingCard.classList.add('hidden');
-        portal.classList.add('hidden');
-        switchAuthTab('signin');
+      if (!docSnap.exists) {
+        console.log("No user document found — redirecting to onboarding.");
+        showOnboarding(user); // or create a blank profile
+        return;
       }
-    });
+
+      const userData = docSnap.data();
+
+      if (!userData.isOnboarded) {
+        showOnboarding(user);
+        return;
+      }
+
+      updateProfileUI(userData);
+      loadMatches(userData);
+      loadConnectionRequests(); // safe to call now
+
+    } catch (err) {
+      console.error("Error loading user data:", err);
+    }
+  } else {
+    // handle signed-out state
+  }
+});
+
   </script>
 </body>
 </html>
