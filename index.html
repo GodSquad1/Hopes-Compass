@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hope's Compass</title>
+
+<link rel="stylesheet" href="styles.css" />
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+</head>
+<body>
+  <main>
+
+    <!-- AUTH SECTION -->
+    <section id="auth-section" class="auth-section">
+      <h1>Hope's Compass</h1>
+      <p>Survivor-guided mentorship for teens undergoing chemotherapy</p>
+
+      <div class="form-toggle-buttons">
+        <button id="btn-signin-toggle" class="active">Sign In</button>
+        <button id="btn-signup-toggle">Sign Up</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <form id="form-signin" class="auth-form active" autocomplete="off">
+        <label for="signin-email">Email</label>
+        <input type="email" id="signin-email" name="email" required autocomplete="username" />
+
+        <label for="signin-password">Password</label>
+        <input type="password" id="signin-password" name="password" required autocomplete="current-password" />
+
+        <button type="submit">Sign In</button>
+        <p class="error-msg" id="signin-error"></p>
+      </form>
+
+      <!-- SIGN UP FORM -->
+      <form id="form-signup" class="auth-form" autocomplete="off">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" name="email" required autocomplete="username" />
+
+        <label for="signup-password">Password</label>
+        <input type="password" id="signup-password" name="password" required autocomplete="new-password" />
+
+        <label for="signup-role">I am a</label>
+        <select id="signup-role" name="role" required>
+          <option value="" disabled selected>Select role</option>
+          <option value="mentee">Mentee (Teen Patient)</option>
+          <option value="mentor">Mentor (Survivor)</option>
+        </select>
+
+        <button type="submit">Sign Up</button>
+        <p class="error-msg" id="signup-error"></p>
+      </form>
+    </section>
+
+    <!-- ONBOARDING SECTION -->
+    <section id="onboarding-section" class="hidden onboarding-section">
+      <h1>Tell us about you</h1>
+      <p id="onboarding-instruction"></p>
+
+      <!-- Mentee onboarding -->
+      <form id="mentee-onboarding-form" class="onboarding-form hidden" autocomplete="off">
+        <label for="mentee-age">Age:</label>
+        <input type="number" id="mentee-age" name="age" min="1" max="120" required placeholder="Your age" />
+
+        <label for="mentee-cancer-type">Cancer Type:</label>
+        <input type="text" id="mentee-cancer-type" name="cancer-type" required placeholder="E.g., Leukemia" />
+
+        <label for="mentee-treatment-stage">Treatment Stage:</label>
+        <select id="mentee-treatment-stage" name="treatment-stage" required>
+          <option value="" disabled selected>Select Stage</option>
+          <option value="diagnosis">Diagnosis</option>
+          <option value="active-treatment">Active Treatment</option>
+          <option value="remission">Remission</option>
+          <option value="follow-up">Follow-up</option>
+          <option value="other">Other</option>
+        </select>
+
+        <label for="mentee-interests">Interests / Concerns:</label>
+        <textarea id="mentee-interests" name="interests" rows="4" placeholder="What matters most to you?" required></textarea>
+
+        <button type="submit">Save &amp; Continue</button>
+        <p class="error-msg" id="mentee-onboarding-error"></p>
+      </form>
+
+      <!-- Mentor onboarding -->
+      <form id="mentor-onboarding-form" class="onboarding-form hidden" autocomplete="off">
+        <label for="mentor-age">Age (optional):</label>
+        <input type="number" id="mentor-age" name="age" min="1" max="120" placeholder="Your age (optional)" />
+
+        <label for="mentor-cancer-types">Cancer Type(s) Survived:</label>
+        <input type="text" id="mentor-cancer-types" name="cancer-types" placeholder="E.g., Leukemia, Lymphoma" required />
+
+        <label for="mentor-time-since-treatment">Time Since Treatment Ended (years):</label>
+        <input type="number" id="mentor-time-since-treatment" name="time-since-treatment" min="0" required />
+
+        <label for="mentor-mentoring-areas">Areas you can mentor in:</label>
+        <textarea id="mentor-mentoring-areas" name="mentoring-areas" rows="4" placeholder="Emotional support, Practical tips, etc." required></textarea>
+
+        <label for="mentor-availability">Preferred Communication Style / Availability:</label>
+        <textarea id="mentor-availability" name="availability" rows="2" placeholder="E.g., Weekdays evenings, video calls" required></textarea>
+
+        <button type="submit">Save &amp; Continue</button>
+        <p class="error-msg" id="mentor-onboarding-error"></p>
+      </form>
+    </section>
+
+    <!-- PORTAL SECTION -->
+    <section id="portal-section" class="hidden portal-section">
+      <header id="portal-header">
+        <h1>Hope's Compass</h1>
+        <button id="btn-logout">Logout</button>
+      </header>
+
+      <nav id="portal-tabs">
+        <button class="tab-btn active" data-tab="chat-tab">Chat</button>
+        <button class="tab-btn" data-tab="goals-tab">Goals</button>
+        <button class="tab-btn" data-tab="resources-tab">Resources</button>
+        <button class="tab-btn" data-tab="questions-tab">Anonymous Q&A</button>
+      </nav>
+
+      <main id="portal-content">
+        <section id="chat-tab" class="tab-content active">
+          <h2>Chat</h2>
+          <div id="chat-messages" class="chat-messages"></div>
+          <form id="chat-form" autocomplete="off">
+            <input type="text" id="chat-input" placeholder="Type a message..." required />
+            <button type="submit">Send</button>
+          </form>
+        </section>
+
+        <section id="goals-tab" class="tab-content">
+          <h2>Goals</h2>
+          <div id="goals-list"></div>
+          <form id="goals-form" autocomplete="off">
+            <input type="text" id="goal-input" placeholder="Set a goal..." required />
+            <button type="submit">Add Goal</button>
+          </form>
+        </section>
+
+        <section id="resources-tab" class="tab-content">
+          <h2>Resources</h2>
+          <ul id="resources-list">
+            <li>Loading resources...</li>
+          </ul>
+        </section>
+
+        <section id="questions-tab" class="tab-content">
+          <h2>Anonymous Question Box</h2>
+          <ul id="questions-list"></ul>
+          <form id="questions-form" autocomplete="off">
+            <textarea id="question-input" rows="3" placeholder="Ask a question anonymously..." required></textarea>
+            <button type="submit">Submit Question</button>
+          </form>
+        </section>
+      </main>
+    </section>
+
+  </main>
+
+<script src="compass.js" type="module"></script>
+</body>
+</html>
