@@ -1,0 +1,410 @@
+/* Global */
+
+body, html {
+  margin: 0; padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #eef2f7;
+  min-height: 100vh;
+  color: #222;
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* AUTH SECTION */
+
+.auth-section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 24px 32px;
+  text-align: center;
+}
+
+.auth-section h1 {
+  margin-bottom: 6px;
+}
+
+.auth-section p {
+  margin-bottom: 20px;
+  color: #555;
+  font-size: 1.05rem;
+}
+
+.form-toggle-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 24px;
+}
+
+.form-toggle-buttons button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.form-toggle-buttons button.active {
+  border-color: #3f51b5;
+  font-weight: 700;
+  color: #3f51b5;
+}
+
+/* Forms */
+
+.auth-form {
+  display: none;
+  flex-direction: column;
+  text-align: left;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.auth-form.active {
+  display: flex;
+}
+
+.auth-form label {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.auth-form input,
+.auth-form select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+  outline: none;
+  border-color: #3f51b5;
+}
+
+.auth-form button {
+  background-color: #3f51b5;
+  color: white;
+  padding: 12px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.auth-form button:hover {
+  background-color: #2c3e9e;
+}
+
+.error-msg {
+  color: #b00020;
+  min-height: 20px;
+  margin-bottom: 10px;
+}
+
+/* ONBOARDING SECTION */
+
+.onboarding-section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  padding: 24px 32px;
+  max-width: 600px;
+  margin: 40px auto;
+  text-align: left;
+}
+
+.onboarding-section h1 {
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.onboarding-section p {
+  margin-bottom: 24px;
+  text-align: center;
+  color: #444;
+  font-size: 1rem;
+}
+
+.onboarding-form {
+  display: none;
+  flex-direction: column;
+}
+
+.onboarding-form.active {
+  display: flex;
+}
+
+.onboarding-form label {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.onboarding-form input,
+.onboarding-form select,
+.onboarding-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  resize: vertical;
+}
+
+.onboarding-form input:focus,
+.onboarding-form select:focus,
+.onboarding-form textarea:focus {
+  outline: none;
+  border-color: #3f51b5;
+}
+
+.onboarding-form button {
+  background-color: #3f51b5;
+  color: white;
+  padding: 12px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  align-self: center;
+  max-width: 180px;
+}
+
+.onboarding-form button:hover {
+  background-color: #2c3e9e;
+}
+
+/* PORTAL SECTION */
+
+.portal-section {
+  margin-top: 40px;
+}
+
+#portal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 8px;
+  border-bottom: 2px solid #ddd;
+}
+
+#portal-header h1 {
+  font-size: 1.6rem;
+  color: #3f51b5;
+}
+
+#btn-logout {
+  background-color: #b00020;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+}
+
+#btn-logout:hover {
+  background-color: #7a0014;
+}
+
+#portal-tabs {
+  display: flex;
+  border-bottom: 2px solid #3f51b5;
+  margin-bottom: 24px;
+  gap: 12px;
+  padding: 0 8px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+#portal-tabs .tab-btn {
+  padding: 8px 16px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #3f51b5cc;
+  transition: border-color 0.3s ease, color 0.3s ease;
+  white-space: nowrap;
+}
+
+#portal-tabs .tab-btn.active {
+  color: #3f51b5;
+  border-color: #3f51b5;
+}
+
+#portal-content {
+  min-height: 400px;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Chat */
+
+.chat-messages {
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  height: 200px;
+  padding: 12px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+
+#chat-form {
+  display: flex;
+  gap: 8px;
+}
+
+#chat-input {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1.5px solid #ccc;
+}
+
+#chat-form button {
+  background-color: #3f51b5;
+  border: none;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background-color 0.25s ease;
+}
+
+#chat-form button:hover {
+  background-color: #2c3e9e;
+}
+
+/* Goals */
+
+#goals-list {
+  margin-bottom: 12px;
+}
+
+.goal-item {
+  background: #e3e7ff;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* Goals form */
+
+#goals-form {
+  display: flex;
+  gap: 12px;
+}
+
+#goal-input {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1.5px solid #ccc;
+}
+
+#goals-form button {
+  background-color: #3f51b5;
+  border: none;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background-color 0.25s ease;
+}
+
+#goals-form button:hover {
+  background-color: #2c3e9e;
+}
+
+/* Resources */
+
+#resources-list {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+#resources-list li {
+  margin-bottom: 12px;
+}
+
+/* Questions */
+
+#questions-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 12px;
+}
+
+.question-item {
+  background: #fffbf0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-style: italic;
+  color: #555;
+}
+
+#questions-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1.5px solid #ccc;
+  font-size: 1rem;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+
+#questions-form button {
+  background-color: #3f51b5;
+  border: none;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background-color 0.25s ease;
+}
+
+#questions-form button:hover {
+  background-color: #2c3e9e;
+}
+
+/* Utility */
+
+.hidden {
+  display: none !important;
+}
