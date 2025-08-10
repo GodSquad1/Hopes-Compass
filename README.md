@@ -1,5 +1,5 @@
 # Hope's Compass
-A narrative-driven clinical trial companion that explains trials in the context of your personal treatment story, guides you through the matching process like a travel itinerary, and even helps you navigate the bureaucracy.
+Connecting cancer patients with survivor mentors for support, guidance, and encouragement through secure, personalized, and moderated conversations.
 
 # Project Description
 Our goal at Hope's Compass is to help cancer patients, especially teenagers and young adults, by providing them with the practical, emotional, and educational resources they require during a trying time. Our platform provides a secure online environment where users can track their objectives, obtain carefully chosen resources, ask questions in confidence, and find mentorship. We used Firebase to build Hope's Compass with dependable backend services, and we used JavaScript, HTML, and CSS to make sure our frontend is easy to use. We offer structured data and helpful links to assist users in navigating the complicated world of cancer support by collaborating with reputable cancer organizations like the American Cancer Society and NCI.
